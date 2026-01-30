@@ -16,6 +16,13 @@ class SQLAlchemyTagRepository(TagRepository):
     def _to_domain(self, model: Tag) -> DomainTag:
         return DomainTag(id=model.id, slug=model.slug, name=model.name)
 
+    async def _commit(self) -> None:
+        await self.session.commit()
+
+    async def _commit_and_refresh(self, model: Tag) -> None:
+        await self.session.commit()
+        await self.session.refresh(model)
+
     async def list_all(self) -> list[DomainTag]:
         result = await self.session.scalars(select(Tag))
         return [self._to_domain(tag) for tag in result]
@@ -29,8 +36,7 @@ class SQLAlchemyTagRepository(TagRepository):
     async def add(self, tag: DomainTag) -> None:
         model = Tag(slug=tag.slug, name=tag.name)
         self.session.add(model)
-        await self.session.commit()
-        await self.session.refresh(model)
+        await self._commit_and_refresh(model)
         tag.id = model.id
 
     async def delete(self, tag: DomainTag) -> None:
@@ -43,7 +49,7 @@ class SQLAlchemyTagRepository(TagRepository):
             return
 
         await self.session.delete(model)
-        await self.session.commit()
+        await self._commit()
 
     async def count_usage(self, tag_id: int) -> int:
         return (

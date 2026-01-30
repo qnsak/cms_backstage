@@ -25,6 +25,13 @@ class SQLAlchemyArticleRepository(ArticleRepository):
             tag_slugs=[t.slug for t in model.tags],
         )
 
+    async def _commit(self) -> None:
+        await self.session.commit()
+
+    async def _commit_and_refresh(self, model: Article) -> None:
+        await self.session.commit()
+        await self.session.refresh(model)
+
     async def _load_tags(self, tags: list[DomainTag]) -> list[Tag]:
         slugs = [tag.slug for tag in tags]
         if not slugs:
@@ -112,8 +119,7 @@ class SQLAlchemyArticleRepository(ArticleRepository):
             tags=tag_models,
         )
         self.session.add(article)
-        await self.session.commit()
-        await self.session.refresh(article)
+        await self._commit_and_refresh(article)
         return self._to_domain(article)
 
     async def update(
@@ -135,8 +141,7 @@ class SQLAlchemyArticleRepository(ArticleRepository):
         article.title = title
         article.body_md = body_md
         article.tags = await self._load_tags(tags)
-        await self.session.commit()
-        await self.session.refresh(article)
+        await self._commit_and_refresh(article)
         return self._to_domain(article)
 
     async def publish(self, slug: str, published_at: str) -> DomainArticle | None:
@@ -152,8 +157,7 @@ class SQLAlchemyArticleRepository(ArticleRepository):
         if article.published_at is None:
             article.published_at = published_at
 
-        await self.session.commit()
-        await self.session.refresh(article)
+        await self._commit_and_refresh(article)
         return self._to_domain(article)
 
     async def delete(self, slug: str) -> bool:
@@ -165,5 +169,5 @@ class SQLAlchemyArticleRepository(ArticleRepository):
             ArticleTag.__table__.delete().where(ArticleTag.article_id == article.id)
         )
         await self.session.delete(article)
-        await self.session.commit()
+        await self._commit()
         return True

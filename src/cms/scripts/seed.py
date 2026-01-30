@@ -10,8 +10,8 @@ from cms.infrastructure.db.session import AsyncSessionLocal, engine
 from cms.infrastructure.db.models import Base
 from cms.infrastructure.repositories.article_repo import SQLAlchemyArticleRepository
 from cms.infrastructure.repositories.tag_repo import SQLAlchemyTagRepository
-from cms.application.articles.commands import create_article
-from cms.application.articles.commands import publish_article
+from cms.application.articles.create import create_article
+from cms.application.articles.publish import publish_article
 
 
 async def main() -> None:

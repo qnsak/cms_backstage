@@ -6,8 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from cms.interfaces.http.articles import get_session
 from cms.infrastructure.repositories.tag_repo import SQLAlchemyTagRepository
-from cms.application.tags.queries import list_tags
-from cms.application.tags.commands import create_tag, delete_tag
+from cms.application.tags.list_all import list_tags
+from cms.application.tags.create import create_tag
+from cms.application.tags.delete import delete_tag
 
 router = APIRouter()
 

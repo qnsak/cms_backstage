@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs shell test test-report test-report-local fmt lint db-reset seed migrate revision typecheck
+.PHONY: help up down logs shell test test-report test-report-local fmt lint check-deps db-reset seed migrate revision typecheck
 
 help: ## 顯示可用指令
 	@echo ""
@@ -42,6 +42,9 @@ fmt: ## Format code with ruff
 
 lint: ## Lint code with ruff
 	docker compose run --rm backend ruff check .
+
+check-deps: ## Check layer dependencies (DDD/Clean Architecture)
+	docker compose run --rm backend python -m cms.scripts.check_layer_dependencies
 
 db-reset: ## Reset SQLite database (DANGER: deletes app.db)
 	rm -f app.db

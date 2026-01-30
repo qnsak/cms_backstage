@@ -65,6 +65,14 @@ make test-report-local
 
 Reports are written to `reports/` when using report targets.
 
+## Dependency Rule Check
+
+Enforce Clean Architecture import rules:
+
+```bash
+make check-deps
+```
+
 ## Adding a New Test Case (Example)
 
 1) Pick the right layer:

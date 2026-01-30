@@ -102,6 +102,55 @@ async def test_article_not_found_contract(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
+async def test_article_update_not_found_contract(client: AsyncClient) -> None:
+    res = await client.put(
+        "/api/articles/missing_slug",
+        json={
+            "title": "Missing",
+            "body_md": "Missing",
+            "tags": [],
+        },
+    )
+    assert res.status_code == 404
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
+
+
+@pytest.mark.asyncio
+async def test_article_publish_not_found_contract(client: AsyncClient) -> None:
+    res = await client.post("/api/articles/missing_slug/publish")
+    assert res.status_code == 404
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
+
+
+@pytest.mark.asyncio
+async def test_article_delete_not_found_contract(client: AsyncClient) -> None:
+    res = await client.delete("/api/articles/missing_slug")
+    assert res.status_code == 404
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
+
+
+@pytest.mark.asyncio
+async def test_article_create_validation_error_contract(client: AsyncClient) -> None:
+    res = await client.post("/api/articles", json={"slug": "only_slug"})
+    assert res.status_code == 422
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
+    assert isinstance(payload["detail"], list)
+
+
+@pytest.mark.asyncio
+async def test_tag_create_validation_error_contract(client: AsyncClient) -> None:
+    res = await client.post("/api/admin/tags", json={"slug": "python"})
+    assert res.status_code == 422
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
+    assert isinstance(payload["detail"], list)
+
+
+@pytest.mark.asyncio
 async def test_tag_contracts(create_tag, list_admin_tags, delete_tag) -> None:
     res: Response = await create_tag()
     assert res.status_code == 200
@@ -123,3 +172,23 @@ async def test_tag_contracts(create_tag, list_admin_tags, delete_tag) -> None:
     assert res.status_code == 200
     payload = res.json()
     assert set(payload.keys()) == {"message", "slug"}
+
+
+@pytest.mark.asyncio
+async def test_tag_duplicate_and_missing_contracts(
+    create_tag,
+    delete_tag,
+) -> None:
+    res: Response = await create_tag()
+    assert res.status_code == 200
+
+    res = await create_tag()
+    assert res.status_code == 400
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
+    assert isinstance(payload["detail"], str)
+
+    res = await delete_tag("missing_tag")
+    assert res.status_code == 404
+    payload = res.json()
+    assert set(payload.keys()) == {"detail"}
