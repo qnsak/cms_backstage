@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cms.interfaces.http.articles import get_session
@@ -13,7 +13,11 @@ from cms.application.tags.delete import delete_tag
 router = APIRouter()
 
 
-class CreateTagRequest(BaseModel):
+class RequestModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class CreateTagRequest(RequestModel):
     slug: str
     name: str
 

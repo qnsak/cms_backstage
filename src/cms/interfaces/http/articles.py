@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import AsyncGenerator, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cms.infrastructure.db.session import AsyncSessionLocal
@@ -27,14 +27,18 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-class CreateArticleRequest(BaseModel):
+class RequestModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class CreateArticleRequest(RequestModel):
     slug: str
     title: str
     body_md: str
     tags: list[str] = []
 
 
-class UpdateArticleRequest(BaseModel):
+class UpdateArticleRequest(RequestModel):
     title: str
     body_md: str
     tags: list[str] = []

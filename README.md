@@ -32,6 +32,10 @@ Open API docs:
 make
 ```
 
+## Configuration
+
+Copy `.env.example` to `.env` and set secrets via environment variables.
+
 ## Testing Plan
 
 This repo uses a layered test strategy aligned with DDD boundaries:
