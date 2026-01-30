@@ -32,5 +32,29 @@ make seed
 make
 ```
 
+## 測試規劃
+
+本專案採用符合 DDD 分層的測試策略：
+
+- Domain：快速 unit test，包含無資料庫的純邏輯測試（例如 slug 驗證）。
+- Interfaces：API flow 測試（fixture-driven）＋ response shape 的 contract 測試。
+- Infrastructure：需要時再用的整合測試（repo/db 行為）。
+
+常用指令：
+
+```bash
+make test
+make test-report
+make test-report-local
+```
+
+測試報告輸出在 `reports/`：
+- `reports/junit.xml`
+- `reports/pytest.html`
+- `reports/coverage.xml`
+- `reports/coverage-html/`
+
+更完整的測試導讀請見 `TESTING.md`。
+
 ## 授權
 MIT

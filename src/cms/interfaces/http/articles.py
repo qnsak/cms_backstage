@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from cms.infrastructure.db.session import AsyncSessionLocal
 from cms.infrastructure.repositories.article_repo import SQLAlchemyArticleRepository
+from cms.infrastructure.repositories.tag_repo import SQLAlchemyTagRepository
 
 from cms.application.articles.queries import list_published_articles, get_article_by_slug
 from cms.application.articles.admin_queries import list_admin_articles
@@ -69,8 +70,11 @@ async def create_article_api(
     req: CreateArticleRequest,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    article_repo = SQLAlchemyArticleRepository(session)
+    tag_repo = SQLAlchemyTagRepository(session)
     article = await create_article(
-        session=session,
+        article_repo=article_repo,
+        tag_repo=tag_repo,
         frontend_slug=req.slug,
         title=req.title,
         body_md=req.body_md,
@@ -80,7 +84,7 @@ async def create_article_api(
         "slug": article.slug,
         "title": article.title,
         "published_at": article.published_at,
-        "tags": [t.slug for t in article.tags],
+        "tags": article.tag_slugs,
     }
 
 
@@ -90,8 +94,11 @@ async def update_article_api(
     req: UpdateArticleRequest,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    article_repo = SQLAlchemyArticleRepository(session)
+    tag_repo = SQLAlchemyTagRepository(session)
     article = await update_article(
-        session=session,
+        article_repo=article_repo,
+        tag_repo=tag_repo,
         slug=slug,
         title=req.title,
         body_md=req.body_md,
@@ -104,7 +111,7 @@ async def update_article_api(
         "slug": article.slug,
         "title": article.title,
         "published_at": article.published_at,
-        "tags": [t.slug for t in article.tags],
+        "tags": article.tag_slugs,
     }
 
 
@@ -113,7 +120,8 @@ async def publish_article_api(
     slug: str,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
-    article = await publish_article(session=session, slug=slug)
+    article_repo = SQLAlchemyArticleRepository(session)
+    article = await publish_article(article_repo=article_repo, slug=slug)
     if article is None:
         raise HTTPException(status_code=404, detail="Not found")
     return {"slug": article.slug, "published_at": article.published_at, "message": "published"}
@@ -124,7 +132,8 @@ async def delete_article_api(
     slug: str,
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, str]:
-    ok = await delete_article(session, slug)
+    article_repo = SQLAlchemyArticleRepository(session)
+    ok = await delete_article(article_repo, slug)
     if not ok:
         raise HTTPException(status_code=404, detail="Not found")
     return {"message": "deleted", "slug": slug}

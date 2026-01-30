@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs shell test fmt lint db-reset seed migrate revision typecheck
+.PHONY: help up down logs shell test test-report test-report-local fmt lint db-reset seed migrate revision typecheck
 
 help: ## 顯示可用指令
 	@echo ""
@@ -23,6 +23,19 @@ shell: ## Open a bash shell inside container
 
 test: ## Run pytest (in-memory DB)
 	docker compose run --rm backend pytest -q
+
+test-report: ## Run pytest with junit/html/coverage reports
+	docker compose run --rm --build backend bash -lc "mkdir -p reports && pytest -q \
+		--junitxml=reports/junit.xml \
+		--html=reports/pytest.html --self-contained-html \
+		--cov=src/cms --cov-report=xml:reports/coverage.xml --cov-report=html:reports/coverage-html"
+
+test-report-local: ## Run pytest reports locally (no docker)
+	mkdir -p reports
+	pytest -q \
+		--junitxml=reports/junit.xml \
+		--html=reports/pytest.html --self-contained-html \
+		--cov=src/cms --cov-report=xml:reports/coverage.xml --cov-report=html:reports/coverage-html
 
 fmt: ## Format code with ruff
 	docker compose run --rm backend ruff format .

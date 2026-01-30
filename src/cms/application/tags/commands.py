@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from cms.domain.tags.entities import Tag
 from cms.domain.tags.repositories import TagRepository
-from cms.infrastructure.db.models import Tag
 
 
 async def create_tag(repo: TagRepository, slug: str, name: str) -> dict[str, str]:
@@ -9,7 +9,7 @@ async def create_tag(repo: TagRepository, slug: str, name: str) -> dict[str, str
     if existing is not None:
         raise ValueError("Tag already exists")
 
-    tag = Tag(slug=slug, name=name)
+    tag = Tag(id=None, slug=slug, name=name)
     await repo.add(tag)
     return {"slug": tag.slug, "name": tag.name}
 

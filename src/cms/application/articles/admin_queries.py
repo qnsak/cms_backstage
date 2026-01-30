@@ -22,7 +22,7 @@ async def list_admin_articles(
             slug=a.slug,
             title=a.title,
             published_at=a.published_at,
-            tags=[t.slug for t in a.tags],
+            tags=a.tag_slugs,
         )
         for a in articles
     ]

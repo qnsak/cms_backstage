@@ -32,5 +32,29 @@ Open API docs:
 make
 ```
 
+## Testing Plan
+
+This repo uses a layered test strategy aligned with DDD boundaries:
+
+- Domain: fast unit tests, including DB-free checks (pure logic like slug validation).
+- Interfaces: API flow tests (fixture-driven) plus contract tests for response shape.
+- Infrastructure: integration-style tests for repo/db behavior when needed.
+
+Common commands:
+
+```bash
+make test
+make test-report
+make test-report-local
+```
+
+Test reports are written to `reports/`:
+- `reports/junit.xml`
+- `reports/pytest.html`
+- `reports/coverage.xml`
+- `reports/coverage-html/`
+
+See `TESTING.md` for a detailed testing guide.
+
 ## License
 MIT

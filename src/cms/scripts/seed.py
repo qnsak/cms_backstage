@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from cms.infrastructure.db.session import AsyncSessionLocal, engine
 from cms.infrastructure.db.models import Base
+from cms.infrastructure.repositories.article_repo import SQLAlchemyArticleRepository
+from cms.infrastructure.repositories.tag_repo import SQLAlchemyTagRepository
 from cms.application.articles.commands import create_article
 from cms.application.articles.commands import publish_article
 
@@ -23,15 +25,18 @@ async def main() -> None:
         articles_data = json.load(f)
 
     async with AsyncSessionLocal() as session:  # type: AsyncSession
+        article_repo = SQLAlchemyArticleRepository(session)
+        tag_repo = SQLAlchemyTagRepository(session)
         for article_data in articles_data:
             article = await create_article(
-                session=session,
+                article_repo=article_repo,
+                tag_repo=tag_repo,
                 frontend_slug=article_data["slug"],
                 title=article_data["title"],
                 body_md=article_data["body_md"],
                 tag_slugs=article_data["tag_slugs"],
             )
-            await publish_article(session=session, slug=article.slug)
+            await publish_article(article_repo=article_repo, slug=article.slug)
             print(f"✓ Created: {article.title}")
 
     print("Seed completed.")

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from cms.infrastructure.db.models import Tag
+from cms.domain.tags.entities import Tag
 
 
 class TagRepository(ABC):

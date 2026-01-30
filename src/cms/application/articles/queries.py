@@ -15,7 +15,7 @@ async def list_published_articles(
             slug=a.slug,
             title=a.title,
             published_at=a.published_at,
-            tags=[t.slug for t in a.tags],
+            tags=a.tag_slugs,
         )
         for a in articles
     ]
@@ -34,5 +34,5 @@ async def get_article_by_slug(
         title=article.title,
         body_md=article.body_md,
         published_at=article.published_at,
-        tags=[t.slug for t in article.tags],
+        tags=article.tag_slugs,
     )
