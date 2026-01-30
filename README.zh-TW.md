@@ -54,7 +54,7 @@ make test-report-local
 - `reports/coverage.xml`
 - `reports/coverage-html/`
 
-更完整的測試導讀請見 `TESTING.md`。
+更完整的測試導讀請見 `docs/TESTING.md`。
 
 ## 授權
 MIT

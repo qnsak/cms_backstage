@@ -54,7 +54,7 @@ Test reports are written to `reports/`:
 - `reports/coverage.xml`
 - `reports/coverage-html/`
 
-See `TESTING.md` for a detailed testing guide.
+See `docs/TESTING.md` for a detailed testing guide.
 
 ## License
 MIT
