@@ -36,6 +36,13 @@ make
 
 Copy `.env.example` to `.env` and set secrets via environment variables.
 
+## Security
+
+Optional rate limiting can be enabled via:
+- `RATE_LIMIT_ENABLED=true`
+- `RATE_LIMIT_REQUESTS=100`
+- `RATE_LIMIT_WINDOW_SECONDS=60`
+
 ## Testing Plan
 
 This repo uses a layered test strategy aligned with DDD boundaries:

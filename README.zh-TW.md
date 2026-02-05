@@ -36,6 +36,13 @@ make
 
 請複製 `.env.example` 成 `.env`，並透過環境變數設定敏感資訊。
 
+## 資安
+
+可選擇性啟用 rate limit（請調整為合適值）：
+- `RATE_LIMIT_ENABLED=true`
+- `RATE_LIMIT_REQUESTS=100`
+- `RATE_LIMIT_WINDOW_SECONDS=60`
+
 ## 測試規劃
 
 本專案採用符合 DDD 分層的測試策略：
