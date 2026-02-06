@@ -7,25 +7,41 @@ from httpx import AsyncClient, Response
 
 
 @pytest.fixture
-def create_tag(client: AsyncClient) -> Callable[[str, str], Awaitable[Response]]:
+def create_tag(
+    client: AsyncClient,
+    admin_auth_header: dict[str, str],
+) -> Callable[[str, str], Awaitable[Response]]:
     async def _create(slug: str = "python", name: str = "Python") -> Response:
-        return await client.post("/api/admin/tags", json={"slug": slug, "name": name})
+        return await client.post(
+            "/api/admin/tags",
+            json={"slug": slug, "name": name},
+            headers=admin_auth_header,
+        )
 
     return _create
 
 
 @pytest.fixture
-def delete_tag(client: AsyncClient) -> Callable[[str], Awaitable[Response]]:
+def delete_tag(
+    client: AsyncClient,
+    admin_auth_header: dict[str, str],
+) -> Callable[[str], Awaitable[Response]]:
     async def _delete(slug: str) -> Response:
-        return await client.delete(f"/api/admin/tags/{slug}")
+        return await client.delete(
+            f"/api/admin/tags/{slug}",
+            headers=admin_auth_header,
+        )
 
     return _delete
 
 
 @pytest.fixture
-def list_admin_tags(client: AsyncClient) -> Callable[[], Awaitable[Response]]:
+def list_admin_tags(
+    client: AsyncClient,
+    admin_auth_header: dict[str, str],
+) -> Callable[[], Awaitable[Response]]:
     async def _list() -> Response:
-        return await client.get("/api/admin/tags")
+        return await client.get("/api/admin/tags", headers=admin_auth_header)
 
     return _list
 
@@ -60,9 +76,15 @@ def publish_article(client: AsyncClient) -> Callable[[str], Awaitable[Response]]
 
 
 @pytest.fixture
-def get_admin_article(client: AsyncClient) -> Callable[[str], Awaitable[Response]]:
+def get_admin_article(
+    client: AsyncClient,
+    admin_auth_header: dict[str, str],
+) -> Callable[[str], Awaitable[Response]]:
     async def _get(slug: str) -> Response:
-        return await client.get(f"/api/admin/articles/{slug}")
+        return await client.get(
+            f"/api/admin/articles/{slug}",
+            headers=admin_auth_header,
+        )
 
     return _get
 
@@ -76,8 +98,11 @@ def list_contents(client: AsyncClient) -> Callable[[], Awaitable[Response]]:
 
 
 @pytest.fixture
-def list_admin_articles(client: AsyncClient) -> Callable[[], Awaitable[Response]]:
+def list_admin_articles(
+    client: AsyncClient,
+    admin_auth_header: dict[str, str],
+) -> Callable[[], Awaitable[Response]]:
     async def _list() -> Response:
-        return await client.get("/api/admin/articles")
+        return await client.get("/api/admin/articles", headers=admin_auth_header)
 
     return _list

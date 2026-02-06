@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import AsyncGenerator, Literal
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from cms.infrastructure.db.session import AsyncSessionLocal
+from cms.interfaces.http.deps import get_session
 from cms.infrastructure.repositories.article_repo import SQLAlchemyArticleRepository
 from cms.infrastructure.repositories.tag_repo import SQLAlchemyTagRepository
 
@@ -18,13 +18,9 @@ from cms.application.articles.create import create_article
 from cms.application.articles.update import update_article
 from cms.application.articles.publish import publish_article
 from cms.application.articles.delete import delete_article
+from cms.interfaces.http.auth import get_current_admin_user
 
 router = APIRouter()
-
-
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
-        yield session
 
 
 class RequestModel(BaseModel):
@@ -154,6 +150,7 @@ async def admin_list_articles_api(
     mode: AdminMode = Query("all"),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, le=50),
+    _admin_user: int = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict]:
     repo = SQLAlchemyArticleRepository(session)
@@ -164,6 +161,7 @@ async def admin_list_articles_api(
 @router.get("/api/admin/articles/{slug}")
 async def admin_get_article_api(
     slug: str,
+    _admin_user: int = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     repo = SQLAlchemyArticleRepository(session)

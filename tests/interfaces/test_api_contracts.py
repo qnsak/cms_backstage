@@ -142,8 +142,15 @@ async def test_article_create_validation_error_contract(client: AsyncClient) -> 
 
 
 @pytest.mark.asyncio
-async def test_tag_create_validation_error_contract(client: AsyncClient) -> None:
-    res = await client.post("/api/admin/tags", json={"slug": "python"})
+async def test_tag_create_validation_error_contract(
+    client: AsyncClient,
+    admin_auth_header: dict[str, str],
+) -> None:
+    res = await client.post(
+        "/api/admin/tags",
+        json={"slug": "python"},
+        headers=admin_auth_header,
+    )
     assert res.status_code == 422
     payload = res.json()
     assert set(payload.keys()) == {"detail"}

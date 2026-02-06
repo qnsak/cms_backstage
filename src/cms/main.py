@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from cms.interfaces.http.articles import router as article_router
+from cms.interfaces.http.auth import router as auth_router
 from cms.interfaces.http.tags import router as tag_router
 from cms.interfaces.http.rate_limit import RateLimiterMiddleware
 
@@ -22,6 +23,7 @@ if os.getenv("RATE_LIMIT_ENABLED", "false").lower() == "true":
     )
 
 app.include_router(article_router)
+app.include_router(auth_router)
 app.include_router(tag_router)
 
 

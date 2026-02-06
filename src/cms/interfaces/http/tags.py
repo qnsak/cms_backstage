@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from cms.interfaces.http.articles import get_session
+from cms.interfaces.http.deps import get_session
 from cms.infrastructure.repositories.tag_repo import SQLAlchemyTagRepository
 from cms.application.tags.list_all import list_tags
 from cms.application.tags.create import create_tag
 from cms.application.tags.delete import delete_tag
+from cms.interfaces.http.auth import get_current_admin_user
 
 router = APIRouter()
 
@@ -24,6 +25,7 @@ class CreateTagRequest(RequestModel):
 
 @router.get("/api/admin/tags")
 async def admin_list_tags_api(
+    _admin_user: int = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[dict[str, str]]:
     repo = SQLAlchemyTagRepository(session)
@@ -33,6 +35,7 @@ async def admin_list_tags_api(
 @router.post("/api/admin/tags")
 async def admin_create_tag_api(
     req: CreateTagRequest,
+    _admin_user: int = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, str]:
     repo = SQLAlchemyTagRepository(session)
@@ -45,6 +48,7 @@ async def admin_create_tag_api(
 @router.delete("/api/admin/tags/{slug}")
 async def admin_delete_tag_api(
     slug: str,
+    _admin_user: int = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict[str, str]:
     repo = SQLAlchemyTagRepository(session)
